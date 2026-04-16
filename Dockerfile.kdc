@@ -1,0 +1,15 @@
+FROM debian:bookworm-slim
+
+# Install MIT Kerberos 5 KDC and admin server
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y krb5-kdc krb5-admin-server && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Expose Kerberos ports
+EXPOSE 88 749
+
+COPY kdc-entrypoint.sh /usr/local/bin/kdc-entrypoint.sh
+RUN chmod +x /usr/local/bin/kdc-entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/kdc-entrypoint.sh"]

@@ -1,0 +1,23 @@
+services:
+  kdc-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.kdc
+    container_name: kdc-service
+    environment:
+      - KRB5_REALM=EXAMPLE.COM
+      - KRB5_KDC=kdc-service
+      - KRB5_PASS=password
+    volumes:
+      - ./keytabs:/etc/security/keytabs
+    # This image usually allows creating principals via environment or scripts
+    # For this example, we'll assume a way to initialize principals.
+
+  kerberos-app:
+    build: .
+    container_name: kerberos-app
+    depends_on:
+      - kdc-service
+    volumes:
+      - ./keytabs:/etc/security/keytabs
+    command: ["com.example.kerberos.KerberosClient"]
