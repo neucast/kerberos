@@ -10,14 +10,19 @@ services:
       - KRB5_PASS=password
     volumes:
       - ./keytabs:/etc/security/keytabs
-    # This image usually allows creating principals via environment or scripts
-    # For this example, we'll assume a way to initialize principals.
+    healthcheck:
+      test: ["CMD-SHELL", "kadmin.local -q 'listprincs' > /dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   kerberos-app:
     build: .
     container_name: kerberos-app
     depends_on:
-      - kdc-service
+      kdc-service:
+        condition: service_healthy
     volumes:
       - ./keytabs:/etc/security/keytabs
     command: ["com.example.kerberos.KerberosClient"]

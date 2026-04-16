@@ -26,18 +26,18 @@ cat <<EOF > /etc/krb5.conf
 EOF
 fi
 
-# Create kdc.conf if it doesn't exist
-mkdir -p /var/lib/krb5kdc
-if [ ! -f /var/lib/krb5kdc/kdc.conf ]; then
-cat <<EOF > /var/lib/krb5kdc/kdc.conf
+# Create kdc.conf if it doesn't exist (standard Debian path: /etc/krb5kdc/)
+mkdir -p /etc/krb5kdc /var/lib/krb5kdc
+if [ ! -f /etc/krb5kdc/kdc.conf ]; then
+cat <<EOF > /etc/krb5kdc/kdc.conf
 [kdcdefaults]
     kdc_ports = 88,750
 
 [realms]
     $REALM = {
         database_name = /var/lib/krb5kdc/principal
-        admin_keytab = /var/lib/krb5kdc/kadm5.keytab
-        acl_file = /var/lib/krb5kdc/kadm5.acl
+        admin_keytab = /etc/krb5kdc/kadm5.keytab
+        acl_file = /etc/krb5kdc/kadm5.acl
         key_stash_file = /var/lib/krb5kdc/stash
         max_life = 10h 0m 0s
         max_renewable_life = 7d 0h 0m 0s
@@ -47,9 +47,9 @@ cat <<EOF > /var/lib/krb5kdc/kdc.conf
 EOF
 fi
 
-# Create ACL file if it doesn't exist
-if [ ! -f /var/lib/krb5kdc/kadm5.acl ]; then
-    echo "*/admin@$REALM *" > /var/lib/krb5kdc/kadm5.acl
+# Create ACL file if it doesn't exist (standard Debian path: /etc/krb5kdc/)
+if [ ! -f /etc/krb5kdc/kadm5.acl ]; then
+    echo "*/admin@$REALM *" > /etc/krb5kdc/kadm5.acl
 fi
 
 # Initialize database if it doesn't exist
